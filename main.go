@@ -8,7 +8,6 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -22,14 +21,18 @@ type Todo struct {
 
 var collection *mongo.Collection
 
-func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+func getEnv(key string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		log.Fatalf("Missing required environment variable %s", key)
 	}
 
+	return value
+}
+
+func main() {
 	// staring the server
-	MONGO_DB_URL := os.Getenv("MONGO_DB_URL")
+	MONGO_DB_URL := getEnv("MONGO_DB_URL")
 	clientOptions := options.Client().ApplyURI(MONGO_DB_URL)
 	client, err := mongo.Connect(clientOptions)
 
@@ -53,7 +56,9 @@ func main() {
 	api.DELETE("/todos", deleteTodoAll)
 	api.DELETE("/todos/:id", deleteTodo)
 
-	server.Run(fmt.Sprintf(":%v", os.Getenv("PORT")))
+	port := getEnv("PORT")
+
+	server.Run(fmt.Sprintf(":%v", port))
 }
 
 func getTodoes(ctx *gin.Context) {
