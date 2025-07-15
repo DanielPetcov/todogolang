@@ -49,15 +49,12 @@ func main() {
 	// starting the server
 	server := gin.Default()
 	server.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://todogolang-frontend.vercel.app/"},
+		AllowOrigins:     []string{"https://todogolang-frontend.vercel.app"},
 		AllowMethods:     []string{"GET", "POST", "DELETE", "PUT"},
-		AllowHeaders:     []string{"Origin"},
+		AllowHeaders:     []string{"Origin", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-		AllowOriginFunc: func(origin string) bool {
-			return origin == "https://github.com"
-		},
-		MaxAge: 12 * time.Hour,
+		MaxAge:           12 * time.Hour,
 	}))
 	api := server.Group("/api")
 
